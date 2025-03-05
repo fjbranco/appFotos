@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppFotos.Models
 {
@@ -10,6 +11,7 @@ namespace AppFotos.Models
         /// <summary>
         /// identificador da fotografia
         /// </summary>
+        [Key]
         public int Id { get; set; }
         /// <summary>
         /// Título da fotografia

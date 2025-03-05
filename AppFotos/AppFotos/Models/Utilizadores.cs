@@ -8,6 +8,7 @@
         /// <summary>
         /// Identificador do utilizador
         /// </summary>
+        [Key]
         public int Id { get; set; }
         // Nome do utilizador
         public string Nome { get; set; }
