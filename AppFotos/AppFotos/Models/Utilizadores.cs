@@ -30,5 +30,21 @@
         /// </summary>
         public string Telemovel { get; set; }
 
+        /******** Definição dos relacionamentos *********/
+
+        /// <summary>
+        /// Lista das fotografias que são propriedade do utilizador
+        /// </summary>
+        public ICollection<Fotografias> ListaFotos { get; set; }
+
+        /// <summary>
+        /// Lista de gostos das fotografias do utilizador
+        /// </summary>
+        public ICollection<Gostos> ListaGostos { get; set; }
+        /// <summary>
+        /// Lista de compras de fotografias do utilizador
+        /// </summary>
+        public ICollection<Compras> ListaCompras { get; set; }
+
     }
 }

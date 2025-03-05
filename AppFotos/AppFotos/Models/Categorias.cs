@@ -13,5 +13,11 @@
         /// Nome da categoria
         /// </summary>
         public string Categoria { get; set; }
+
+        /******** Definição dos relacionamentos *********/
+
+        // Relacionamentos -
+
+        public ICollection<Fotografias>
     }
 }
