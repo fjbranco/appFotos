@@ -5,7 +5,11 @@ using AppFotos.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Ler do ficheiro 'appsettings.json' os dados da BD
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+// Define o tipo de BD e a sua 'ligação'
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
