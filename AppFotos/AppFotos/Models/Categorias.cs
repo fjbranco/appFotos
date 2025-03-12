@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace AppFotos.Models
-{   
+{
     /// <summary>
     /// Categorias a que as fotografias podem ser associadas
     /// </summary>
@@ -21,6 +21,6 @@ namespace AppFotos.Models
 
         // Relacionamentos -
 
-        public ICollection<Fotografias>
+        public ICollection<Fotografias> ListaFotografias { get; set; }
     }
 }

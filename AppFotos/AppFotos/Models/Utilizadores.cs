@@ -1,4 +1,6 @@
-﻿namespace AppFotos.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AppFotos.Models
 {
     /// <summary>
     /// Utilizadores não anónimos da aplicação
