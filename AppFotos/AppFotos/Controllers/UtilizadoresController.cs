@@ -14,6 +14,10 @@ namespace AppFotos.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Referência à Base de Dados
+        /// </summary>
+        /// <param name="context"></param>
         public UtilizadoresController(ApplicationDbContext context)
         {
             _context = context;
@@ -22,6 +26,9 @@ namespace AppFotos.Controllers
         // GET: Utilizadores
         public async Task<IActionResult> Index()
         {
+            // procurar na BD todos os utilizadores e listá-los entregando de seguida esses dados à View
+            // SELECT *
+            // FROM Utilizadores
             return View(await _context.Utilizadores.ToListAsync());
         }
 
@@ -33,14 +40,14 @@ namespace AppFotos.Controllers
                 return NotFound();
             }
 
-            var utilizadores = await _context.Utilizadores
+            var utilizador = await _context.Utilizadores
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (utilizadores == null)
+            if (utilizador == null)
             {
                 return NotFound();
             }
 
-            return View(utilizadores);
+            return View(utilizador);
         }
 
         // GET: Utilizadores/Create
@@ -54,15 +61,17 @@ namespace AppFotos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Morada,CodPostal,Pais,NIF,Telemovel")] Utilizadores utilizadores)
+        public async Task<IActionResult> Create([Bind("Nome,Morada,CodPostal,Pais,NIF,Telemovel")] Utilizadores utilizador)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(utilizadores);
+                // Corrigir os dados do código postal
+                utilizador.CodPostal = utilizador.CodPostal.ToUpper();
+                _context.Add(utilizador);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(utilizadores);
+            return View(utilizador);
         }
 
         // GET: Utilizadores/Edit/5
@@ -73,12 +82,12 @@ namespace AppFotos.Controllers
                 return NotFound();
             }
 
-            var utilizadores = await _context.Utilizadores.FindAsync(id);
-            if (utilizadores == null)
+            var utilizador = await _context.Utilizadores.FindAsync(id);
+            if (utilizador == null)
             {
                 return NotFound();
             }
-            return View(utilizadores);
+            return View(utilizador);
         }
 
         // POST: Utilizadores/Edit/5
@@ -86,9 +95,9 @@ namespace AppFotos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Morada,CodPostal,Pais,NIF,Telemovel")] Utilizadores utilizadores)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Morada,CodPostal,Pais,NIF,Telemovel")] Utilizadores utilizador)
         {
-            if (id != utilizadores.Id)
+            if (id != utilizador.Id)
             {
                 return NotFound();
             }
@@ -97,12 +106,14 @@ namespace AppFotos.Controllers
             {
                 try
                 {
-                    _context.Update(utilizadores);
+                    // Corrigir os dados do código postal
+                    utilizador.CodPostal = utilizador.CodPostal.ToUpper();
+                    _context.Update(utilizador);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UtilizadoresExists(utilizadores.Id))
+                    if (!UtilizadoresExists(utilizador.Id))
                     {
                         return NotFound();
                     }
@@ -113,7 +124,7 @@ namespace AppFotos.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(utilizadores);
+            return View(utilizador);
         }
 
         // GET: Utilizadores/Delete/5
@@ -124,14 +135,14 @@ namespace AppFotos.Controllers
                 return NotFound();
             }
 
-            var utilizadores = await _context.Utilizadores
+            var utilizador = await _context.Utilizadores
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (utilizadores == null)
+            if (utilizador == null)
             {
                 return NotFound();
             }
 
-            return View(utilizadores);
+            return View(utilizador);
         }
 
         // POST: Utilizadores/Delete/5
@@ -139,10 +150,10 @@ namespace AppFotos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var utilizadores = await _context.Utilizadores.FindAsync(id);
-            if (utilizadores != null)
+            var utilizador = await _context.Utilizadores.FindAsync(id);
+            if (utilizador != null)
             {
-                _context.Utilizadores.Remove(utilizadores);
+                _context.Utilizadores.Remove(utilizador);
             }
 
             await _context.SaveChangesAsync();
