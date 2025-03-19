@@ -22,8 +22,14 @@ namespace AppFotos.Controllers
         // GET: Fotografias
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Fotografias.Include(f => f.Categoria).Include(f => f.Dono);
-            return View(await applicationDbContext.ToListAsync());
+            /*  Interrogação à BD feita em LINQ <=> SQL
+                
+                Select *
+                From Fotografias f inner join Categorias c on f.CategoriaFK=c.Id
+                                   inner join Utilizadores u on f.DonoFK = u.Id
+             */
+            var listaFotografias = _context.Fotografias.Include(f => f.Categoria).Include(f => f.Dono);
+            return View(await listaFotografias.ToListAsync());
         }
 
         // GET: Fotografias/Details/5
@@ -33,17 +39,23 @@ namespace AppFotos.Controllers
             {
                 return NotFound();
             }
-
-            var fotografias = await _context.Fotografias
+            /*  Interrogação à BD feita em LINQ <=> SQL
+                
+                Select *
+                From Fotografias f inner join Categorias c on f.CategoriaFK=c.Id
+                                   inner join Utilizadores u on f.DonoFK = u.Id
+                where f.Id = id
+             */
+            var fotografia = await _context.Fotografias
                 .Include(f => f.Categoria)
                 .Include(f => f.Dono)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (fotografias == null)
+            if (fotografia == null)
             {
                 return NotFound();
             }
 
-            return View(fotografias);
+            return View(fotografia);
         }
 
         // GET: Fotografias/Create
@@ -59,17 +71,17 @@ namespace AppFotos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Titulo,Descricao,Ficheiro,Data,Preco,CategoriaFK,DonoFK")] Fotografias fotografias)
+        public async Task<IActionResult> Create([Bind("Id,Titulo,Descricao,Ficheiro,Data,Preco,CategoriaFK,DonoFK")] Fotografias fotografia)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(fotografias);
+                _context.Add(fotografia);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoriaFK"] = new SelectList(_context.Categorias, "Id", "Categoria", fotografias.CategoriaFK);
-            ViewData["DonoFK"] = new SelectList(_context.Utilizadores, "Id", "NIF", fotografias.DonoFK);
-            return View(fotografias);
+            ViewData["CategoriaFK"] = new SelectList(_context.Categorias, "Id", "Categoria", fotografia.CategoriaFK);
+            ViewData["DonoFK"] = new SelectList(_context.Utilizadores, "Id", "NIF", fotografia.DonoFK);
+            return View(fotografia);
         }
 
         // GET: Fotografias/Edit/5
@@ -80,14 +92,14 @@ namespace AppFotos.Controllers
                 return NotFound();
             }
 
-            var fotografias = await _context.Fotografias.FindAsync(id);
-            if (fotografias == null)
+            var fotografia = await _context.Fotografias.FindAsync(id);
+            if (fotografia == null)
             {
                 return NotFound();
             }
-            ViewData["CategoriaFK"] = new SelectList(_context.Categorias, "Id", "Categoria", fotografias.CategoriaFK);
-            ViewData["DonoFK"] = new SelectList(_context.Utilizadores, "Id", "NIF", fotografias.DonoFK);
-            return View(fotografias);
+            ViewData["CategoriaFK"] = new SelectList(_context.Categorias, "Id", "Categoria", fotografia.CategoriaFK);
+            ViewData["DonoFK"] = new SelectList(_context.Utilizadores, "Id", "NIF", fotografia.DonoFK);
+            return View(fotografia);
         }
 
         // POST: Fotografias/Edit/5
@@ -95,9 +107,9 @@ namespace AppFotos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Titulo,Descricao,Ficheiro,Data,Preco,CategoriaFK,DonoFK")] Fotografias fotografias)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Titulo,Descricao,Ficheiro,Data,Preco,CategoriaFK,DonoFK")] Fotografias fotografia)
         {
-            if (id != fotografias.Id)
+            if (id != fotografia.Id)
             {
                 return NotFound();
             }
@@ -106,12 +118,12 @@ namespace AppFotos.Controllers
             {
                 try
                 {
-                    _context.Update(fotografias);
+                    _context.Update(fotografia);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FotografiasExists(fotografias.Id))
+                    if (!FotografiasExists(fotografia.Id))
                     {
                         return NotFound();
                     }
@@ -122,9 +134,9 @@ namespace AppFotos.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoriaFK"] = new SelectList(_context.Categorias, "Id", "Categoria", fotografias.CategoriaFK);
-            ViewData["DonoFK"] = new SelectList(_context.Utilizadores, "Id", "NIF", fotografias.DonoFK);
-            return View(fotografias);
+            ViewData["CategoriaFK"] = new SelectList(_context.Categorias, "Id", "Categoria", fotografia.CategoriaFK);
+            ViewData["DonoFK"] = new SelectList(_context.Utilizadores, "Id", "NIF", fotografia.DonoFK);
+            return View(fotografia);
         }
 
         // GET: Fotografias/Delete/5
@@ -135,16 +147,16 @@ namespace AppFotos.Controllers
                 return NotFound();
             }
 
-            var fotografias = await _context.Fotografias
+            var fotografia = await _context.Fotografias
                 .Include(f => f.Categoria)
                 .Include(f => f.Dono)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (fotografias == null)
+            if (fotografia == null)
             {
                 return NotFound();
             }
 
-            return View(fotografias);
+            return View(fotografia);
         }
 
         // POST: Fotografias/Delete/5
@@ -152,10 +164,10 @@ namespace AppFotos.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var fotografias = await _context.Fotografias.FindAsync(id);
-            if (fotografias != null)
+            var fotografia = await _context.Fotografias.FindAsync(id);
+            if (fotografia != null)
             {
-                _context.Fotografias.Remove(fotografias);
+                _context.Fotografias.Remove(fotografia);
             }
 
             await _context.SaveChangesAsync();
