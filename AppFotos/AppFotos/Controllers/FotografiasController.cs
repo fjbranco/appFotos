@@ -77,7 +77,7 @@ namespace AppFotos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Titulo,Descricao,Ficheiro,Data,Preco,CategoriaFK,DonoFK")] Fotografias fotografia)
+        public async Task<IActionResult> Create([Bind("Titulo,Descricao,Ficheiro,Data,PrecoAux,CategoriaFK,DonoFK")] Fotografias fotografia)
         {
             // variáveis auxiliares
             bool haErro = false;
@@ -96,9 +96,13 @@ namespace AppFotos.Controllers
                 // Erro. Não foi escolhida uma opção
                 ModelState.AddModelError("", "Tem de escolher um Dono");
              }
-            if (ModelState.IsValid && !haErro)
             // avalia se os dados estão de acordo com o Model
+            if (ModelState.IsValid && !haErro)
             {
+                // Transferir o valor do preço aux para o  Preco
+                fotografia.Preco = Convert.ToDecimal(fotografia.PrecoAux.Replace('.',',')/*,new CultureInfo("pt-PT")*/);
+
+                // Adicionar os dados à nova fotografia
                 _context.Add(fotografia);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

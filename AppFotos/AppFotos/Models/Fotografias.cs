@@ -39,14 +39,26 @@ namespace AppFotos.Models
         [Display(Name = "Preço")]
         public decimal Preco { get; set; }
 
+        /// <summary>
+        /// Atributo auxiliar para recolher o valor do Preço da fotografia
+        /// será usado no Create e Edit
+        /// </summary>
+        [NotMapped] // Não é transportado para a BD
+        [Display(Name = "Preço")]
+        [Required(ErrorMessage ="O {0} é de preenchimento obrigatório")]
+        [StringLength(10)]
+        [RegularExpression("[0-9]{1,7}([.,][0-9]{1,2})?", ErrorMessage ="Apresente um preço correcto.")]
+        public string PrecoAux { get; set; }
+
         /******** Definição dos relacionamentos *********/
-        
+
         // Relacionamentos 1-N
-        
+
         /// <summary>
         /// FK para a tabela de categorias
         /// </summary>
         [ForeignKey(nameof(Categoria))]
+        [Display(Name = "Categoria")]
         public int CategoriaFK { get; set; }
         /// <summary>
         /// FK para as Categorias
@@ -56,6 +68,7 @@ namespace AppFotos.Models
         /// <summary>
         /// FK para referenciar o Dono da fotografia
         /// </summary>
+        [Display(Name = "Dono")]
         [ForeignKey(nameof(Dono))]
         public int DonoFK { get; set; }
         /// <summary>
