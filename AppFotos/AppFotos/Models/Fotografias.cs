@@ -28,10 +28,15 @@ namespace AppFotos.Models
         /// <summary>
         /// Data em que a fotografia foi tirada
         /// </summary>
+        [Display(Name = "Data")]
+        [DataType(DataType.Date)] // transforma o attributo na BD em "Date"
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}",ApplyFormatInEditMode =true)]
+        [Required(ErrorMessage = "A {0} é de preenchimento obrigatório.")]
         public DateTime Data { get; set; }
         /// <summary>
         /// Preço de venda da fotografia
         /// </summary>
+        [Display(Name = "Preço")]
         public decimal Preco { get; set; }
 
         /******** Definição dos relacionamentos *********/
