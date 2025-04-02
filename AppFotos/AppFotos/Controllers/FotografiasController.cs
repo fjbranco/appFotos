@@ -12,11 +12,17 @@ namespace AppFotos.Controllers
 {
     public class FotografiasController : Controller
     {
+        /// <summary>
+        /// referência à base de dados
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
-        public FotografiasController(ApplicationDbContext context)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public FotografiasController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Fotografias
@@ -81,7 +87,8 @@ namespace AppFotos.Controllers
         {
             // variáveis auxiliares
             bool haErro = false;
-            
+            string nomeImagem = "";
+
             // Avaliar se há Categoria
             if (fotografia.CategoriaFK <= 0)
              {
@@ -115,12 +122,35 @@ namespace AppFotos.Controllers
             {
                 // não há ficheiro
                 haErro = true;
-                // Erro. Não há imagem
+                // Erro. Não há ficheiro
                 ModelState.AddModelError("", "Tem de submeter uma fotografia");
             }
             else
             {
                 // há ficheiro, mas será imagem?
+                // https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types
+                if(imagemFoto.ContentType!="image/jpeg" && imagemFoto.ContentType!= "image/png")
+                    
+                {
+                    // não há imagem
+                    haErro = true;
+                    // Erro. Não há imagem
+                    ModelState.AddModelError("", "Tem de submeter uma fotografia");
+                }
+                else
+                {
+                    // há imagem
+                    // novo nome para o ficheiro
+                    Guid g = Guid.NewGuid();
+                    nomeImagem = g.ToString();
+                    string extensao = Path.GetExtension(imagemFoto.FileName).ToLowerInvariant();
+                    nomeImagem += extensao;
+
+                    // guardar este nome na BD
+                    fotografia.Ficheiro = nomeImagem;
+
+
+                }
 
             }
 
@@ -134,6 +164,26 @@ namespace AppFotos.Controllers
                 // Adicionar os dados à nova fotografia
                 _context.Add(fotografia);
                 await _context.SaveChangesAsync();
+
+                
+
+                // guardar o ficheiro no disco rigido
+                // determinar o local de armazenagem da imagem
+                string localizacaoImagem = _webHostEnvironment.WebRootPath;
+                localizacaoImagem = Path.Combine(localizacaoImagem,"imagens");
+
+                if (!Directory.Exists(localizacaoImagem)){
+                    Directory.CreateDirectory(localizacaoImagem);
+                }
+
+                    // gerar caminho completo para a imagem
+                    nomeImagem = Path.Combine(localizacaoImagem, nomeImagem);
+                // guardar a imagem
+                using var stream = new FileStream(nomeImagem,FileMode.Create);
+                await imagemFoto.CopyToAsync(stream);
+
+                
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CategoriaFK"] = new SelectList(_context.Categorias.OrderBy(c=>c.Categoria), "Id", "Categoria", fotografia.CategoriaFK);
