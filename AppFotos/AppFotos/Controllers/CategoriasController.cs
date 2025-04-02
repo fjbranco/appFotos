@@ -90,12 +90,17 @@ namespace AppFotos.Controllers
                 return NotFound();
             }
 
-            var categorias = await _context.Categorias.FindAsync(id);
-            if (categorias == null)
+            var categoria = await _context.Categorias.FindAsync(id);
+            if (categoria == null)
             {
                 return NotFound();
             }
-            return View(categorias);
+            // se chego aqui, há Categoria para editar
+
+            // guardar os dados do objecto que vai ser  enviado paera o browser do utlizador
+            HttpContext.Session.SetInt32("CategoriaID",categoria.Id);
+            // mostrar a view
+            return View(categoria);
         }
 
         // POST: Categorias/Edit/5
