@@ -398,3 +398,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+*.png
+/AppFotos/AppFotos/wwwroot/imagens/6706bc3d-61fa-4e80-b7b1-25ff6a29aedc
