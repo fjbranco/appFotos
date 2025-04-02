@@ -18,6 +18,14 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+// configurar de uso de cookies
+builder.Services.AddSession(options => { 
+    options.IdleTimeout = TimeSpan.FromSeconds(60);
+    options.Cookie.IsEssential = true;
+}  );
+builder.Services.AddDistributedMemoryCache();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,6 +46,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// começar a usar, realmente, os cookies
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
