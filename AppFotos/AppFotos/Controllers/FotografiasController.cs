@@ -215,12 +215,16 @@ namespace AppFotos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Titulo,Descricao,Ficheiro,Data,Preco,CategoriaFK,DonoFK")] Fotografias fotografia)
+        public async Task<IActionResult> Edit(int id, [Bind("Titulo,Descricao,Ficheiro,Data,PrecoAux,CategoriaFK,DonoFK")] Fotografias fotografia, IFormFile imagemFoto)
         {
             if (id != fotografia.Id)
             {
                 return NotFound();
             }
+
+            // Na acção Editar é necessário efectuar o mesmo tratamento dos dados como na acção do Create
+            // Só há uma diferença
+            // Se o utilizador não quiser alterar a imagem, não pode ser apagada da BD
 
             if (ModelState.IsValid)
             {
@@ -275,7 +279,9 @@ namespace AppFotos.Controllers
             var fotografia = await _context.Fotografias.FindAsync(id);
             if (fotografia != null)
             {
+                // remover a imagem da BD
                 _context.Fotografias.Remove(fotografia);
+                // necessário remover a imagem do disco
             }
 
             await _context.SaveChangesAsync();
