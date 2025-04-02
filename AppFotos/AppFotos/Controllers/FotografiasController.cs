@@ -77,7 +77,7 @@ namespace AppFotos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Titulo,Descricao,Ficheiro,Data,PrecoAux,CategoriaFK,DonoFK")] Fotografias fotografia)
+        public async Task<IActionResult> Create([Bind("Titulo,Descricao,Ficheiro,Data,PrecoAux,CategoriaFK,DonoFK")] Fotografias fotografia, IFormFile imagemFoto)
         {
             // variáveis auxiliares
             bool haErro = false;
@@ -96,11 +96,40 @@ namespace AppFotos.Controllers
                 // Erro. Não foi escolhida uma opção
                 ModelState.AddModelError("", "Tem de escolher um Dono");
              }
+            /* Avaliar o ficheiro fornecido
+             * - Há ficheiro?
+             *  - Se não existir ficheiro, gerar mensagem de erro e devolver à view
+             *  - Se existir,
+             *   - será imagem?
+             *    - se não for imagem, gerar mensagem de erro e devolver à view
+             *    - se for imagem, 
+             *     - determinar novo nome do ficheiro
+             *     - guardar na BD o nome do ficheiro
+             *     - guardar o ficheiro no disco rígido do servidor
+             */
+
+
+
+            // 
+            if (imagemFoto == null)
+            {
+                // não há ficheiro
+                haErro = true;
+                // Erro. Não há imagem
+                ModelState.AddModelError("", "Tem de submeter uma fotografia");
+            }
+            else
+            {
+                // há ficheiro, mas será imagem?
+
+            }
+
+
             // avalia se os dados estão de acordo com o Model
             if (ModelState.IsValid && !haErro)
             {
                 // Transferir o valor do preço aux para o  Preco
-                fotografia.Preco = Convert.ToDecimal(fotografia.PrecoAux.Replace('.',',')/*,new CultureInfo("pt-PT")*/);
+                fotografia.Preco = Convert.ToDecimal(fotografia.PrecoAux.Replace('.', ',')/*,new CultureInfo("pt-PT")*/);
 
                 // Adicionar os dados à nova fotografia
                 _context.Add(fotografia);
