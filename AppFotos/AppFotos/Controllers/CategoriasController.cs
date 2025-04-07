@@ -91,8 +91,8 @@ namespace AppFotos.Controllers
                 return NotFound();
             }
 
-            var categorias = await _context.Categorias.FindAsync(id);
-            if (categorias == null)
+            var categoria = await _context.Categorias.FindAsync(id);
+            if (categoria == null)
             {
                 return NotFound();
             }
