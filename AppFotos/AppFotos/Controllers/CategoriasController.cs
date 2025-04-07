@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AppFotos.Data;
 using AppFotos.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace AppFotos.Controllers
 {
@@ -95,7 +96,12 @@ namespace AppFotos.Controllers
             {
                 return NotFound();
             }
-            return View(categorias);
+            // se chego aqui, há Categoria para editar
+
+            // guardar os dados do objecto que vai ser  enviado paera o browser do utlizador
+            HttpContext.Session.SetInt32("CategoriaID",categoria.Id);
+            // mostrar a view
+            return View(categoria);
         }
 
         // POST: Categorias/Edit/5
@@ -103,17 +109,41 @@ namespace AppFotos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Categoria")] Categorias categoriaAlterada)
+        public async Task<IActionResult> Edit([FromRoute] int id, [Bind("Id,Categoria")] Categorias categoriaAlterada)
         {
+            // a anotação FromRoute lê o valor do ID da rota
+            // se houver alterações à rota, há alterações indevidas
             if (id != categoriaAlterada.Id)
             {
-                return NotFound();
+                //return NotFound();
+                return RedirectToAction("Index");
             }
+
+            // verificar se dados recebidos são correspondentes ao objecto enviado para o browser
+            var categoriaID = HttpContext.Session.GetInt32("CategoriaID");
+            var acao = HttpContext.Session.GetString("Acao");
+            
+            // demorou muito tempo
+            if (categoriaID == null || acao.IsNullOrEmpty())
+            {
+                ModelState.AddModelError("", "Demorou muito tempo");
+              /*  // guardar os dados do objecto que vai ser  enviado paera o browser do utlizador
+                HttpContext.Session.SetInt32("CategoriaID", categoriaAlterada.Id);*/
+                return View(categoriaAlterada);
+            }
+            // houve adulteração dos dados
+            if(categoriaID != categoriaAlterada.Id)
+            {
+                // O utilizador está a tentar alterar outro objecto diferente do que receber
+                return RedirectToAction("Index");
+            }
+            
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    //guardar os dados aterados
                     _context.Update(categoriaAlterada);
                     await _context.SaveChangesAsync();
                 }
